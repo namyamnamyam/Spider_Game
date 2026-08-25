@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#080b12" />
+  <title>Spider Game Prototype</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+</head>
+<body>
+  <canvas id="renderCanvas"></canvas>
+
+  <div id="hud">
+    <div class="brand">SPIDER GAME <span>v0.1</span></div>
+    <div id="stats">SPEED 0.0 · ALT 0.0</div>
+    <div id="webState">WEB READY</div>
+  </div>
+
+  <div id="crosshair" aria-hidden="true"><span></span><span></span></div>
+
+  <div id="help">
+    <b>조작</b>
+    <span>WASD 이동 · Space 점프 · 마우스 드래그 시점</span>
+    <span>우클릭 유지 웹 스윙 · E 웹 토글 · F 웹 집 · Shift 스윙 부스트</span>
+  </div>
+
+  <div id="toast"></div>
+
+  <div id="mobileControls">
+    <div id="joystick" class="joystick">
+      <div id="stick"></div>
+    </div>
+    <div class="mobileButtons">
+      <button id="webBtn" type="button">WEB</button>
+      <button id="zipBtn" type="button">ZIP</button>
+      <button id="jumpBtn" type="button">JUMP</button>
+    </div>
+  </div>
+
+  <script src="./game.js"></script>
+</body>
+</html>
