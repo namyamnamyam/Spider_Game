@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <meta name="theme-color" content="#080b12" />
   <title>Spider Game Prototype</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=012" />
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
 </head>
 <body>
   <canvas id="renderCanvas"></canvas>
 
   <div id="hud">
-    <div class="brand">SPIDER GAME <span>v0.1</span></div>
+    <div class="brand">SPIDER GAME <span>v0.1.2</span></div>
     <div id="stats">SPEED 0.0 · ALT 0.0</div>
     <div id="webState">WEB READY</div>
   </div>
@@ -21,8 +21,8 @@
 
   <div id="help">
     <b>조작</b>
-    <span>WASD 이동 · Space 점프 · 마우스 드래그 시점</span>
-    <span>패드: 왼쪽 조이스틱 이동 · 빈 화면 드래그 시점</span>
+    <span>WASD 이동 · Space 점프 · 좌클릭 드래그 시점</span>
+    <span>패드: 왼쪽 조이스틱 이동 · 빈 화면을 위로 밀면 하늘 보기</span>
     <span>우클릭 유지 웹 스윙 · E 웹 토글 · F 웹 집 · Shift 스윙 부스트</span>
   </div>
 
@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <script src="./game.js"></script>
-  <script src="./camera-fix.js"></script>
+  <script src="./game.js?v=012"></script>
+  <script src="./camera-fix.js?v=012"></script>
 </body>
 </html>
