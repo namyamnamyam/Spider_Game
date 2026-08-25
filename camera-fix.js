@@ -9,21 +9,24 @@
   const canvas = document.getElementById("renderCanvas");
   if (!(camera instanceof BABYLON.ArcRotateCamera) || !player || !canvas) return;
 
-  // Babylon's default ArcRotate touch input was unreliable on iPad while a
-  // second pointer is being used by the movement joystick. Replace it with a
-  // tiny explicit look controller so the right side of the screen always works.
+  // game.js follows the player by replacing camera.target every frame.
+  // ArcRotateCamera recalculates alpha/beta when that happens, which used to
+  // pull the view back toward the horizon like a spring. Keep the player's
+  // chosen look angles separately and restore them after the follow update.
   camera.detachControl(canvas);
   camera.lowerBetaLimit = 0.18;
   camera.upperBetaLimit = 2.62;
 
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+  let desiredAlpha = camera.alpha;
+  let desiredBeta = camera.beta;
   let lookPointer = null;
   let lastX = 0;
   let lastY = 0;
 
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
   canvas.addEventListener("pointerdown", (event) => {
-    // Keep right mouse button free for the hold-to-swing control in game.js.
+    // Right mouse stays reserved for hold-to-swing in game.js.
     if (event.pointerType === "mouse" && event.button !== 0) return;
     if (lookPointer !== null) return;
 
@@ -42,9 +45,16 @@
     lastX = event.clientX;
     lastY = event.clientY;
 
-    // Swipe left/right = yaw. Swipe UP = look UP.
-    camera.alpha -= dx * 0.0062;
-    camera.beta = clamp(camera.beta - dy * 0.0062, camera.lowerBetaLimit, camera.upperBetaLimit);
+    desiredAlpha -= dx * 0.0062;
+    // Swipe UP => beta increases past PI/2 => camera looks upward.
+    desiredBeta = clamp(
+      desiredBeta - dy * 0.0062,
+      camera.lowerBetaLimit,
+      camera.upperBetaLimit
+    );
+
+    camera.alpha = desiredAlpha;
+    camera.beta = desiredBeta;
     event.preventDefault();
   }, { passive: false });
 
@@ -57,19 +67,24 @@
   canvas.addEventListener("pointerup", endLook);
   canvas.addEventListener("pointercancel", endLook);
 
-  // Desktop convenience: keep mouse-wheel zoom after detaching Babylon input.
   canvas.addEventListener("wheel", (event) => {
     camera.radius = clamp(camera.radius + event.deltaY * 0.01, 5.5, 14);
     event.preventDefault();
   }, { passive: false });
 
-  // ArcRotate cameras normally descend below their target when beta passes
-  // the horizon. Raise the follow target while looking upward so the camera
-  // stays above the street while still allowing a real skyward aim angle.
+  // This observer is registered after game.js, so it runs after game.js's
+  // camera-follow code. Restore the exact view chosen by the player every
+  // frame, preventing target-follow from changing the pitch/yaw.
   scene.onBeforeRenderObservable.add(() => {
-    const lookUpAmount = Math.max(0, camera.beta - 1.42);
+    camera.alpha = desiredAlpha;
+    camera.beta = desiredBeta;
+
+    // Looking above the horizon puts an ArcRotate camera below its target.
+    // Lift the target enough to keep the camera above street level without
+    // changing the chosen pitch.
+    const lookUpAmount = Math.max(0, desiredBeta - 1.48);
     if (lookUpAmount > 0) {
-      camera.target.y = player.position.y + 1.05 + lookUpAmount * camera.radius * 0.98;
+      camera.target.y = player.position.y + 1.05 + lookUpAmount * camera.radius * 0.92;
     }
   });
 })();
